@@ -1,7 +1,9 @@
 package streamapi;
 
-import java.io.InputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /** Starter for the stream api task. */
 public class Main {
@@ -19,7 +21,7 @@ public class Main {
         // Task III: Random
 
         // Task IV+V: Resources
-
+        System.out.println(resources("file.txt"));
     }
 
     /**
@@ -70,8 +72,8 @@ public class Main {
      * @return An open {@link InputStream} for the resource file
      */
     private static InputStream getResourceAsStream(String path) {
-        // TODO
-        throw new UnsupportedOperationException();
+        // "/" sorgt dafür, dass im Klassenpfad ab src/main/resources gesucht wird
+        return Main.class.getResourceAsStream("/" + path);
     }
 
     /**
@@ -85,7 +87,14 @@ public class Main {
      * @return String of all matching lines, separated by {@code "\n"}
      */
     public static String resources(String path) {
-        // TODO
-        throw new UnsupportedOperationException();
+        try (InputStream in = getResourceAsStream(path);
+             BufferedReader reader = new BufferedReader(
+                 new InputStreamReader(in, StandardCharsets.UTF_8))) {
+            return reader.lines()
+                .filter(line -> line.startsWith("a") && line.length() >= 2)
+                .collect(Collectors.joining("\n"));
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 }
